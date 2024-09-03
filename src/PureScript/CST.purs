@@ -10,6 +10,7 @@ module PureScript.CST
   , parseBinder
   , printModule
   , toRecovered
+  , parseAndEncode
   ) where
 
 import Prelude
@@ -23,6 +24,7 @@ import Data.Lazy as Z
 import Data.Maybe (Maybe(..))
 import Data.Newtype (unwrap)
 import Data.Tuple (Tuple(..))
+import Foreign.Class (encode)
 import PureScript.CST.Lexer (lex, lexModule)
 import PureScript.CST.Parser (Recovered, parseModuleBody, parseModuleHeader)
 import PureScript.CST.Parser as Parser
@@ -33,6 +35,8 @@ import PureScript.CST.Range.TokenList as TokenList
 import PureScript.CST.TokenStream (TokenStream)
 import PureScript.CST.Types (Binder, Declaration, Expr, ImportDecl, Module(..), ModuleHeader, Type)
 import Unsafe.Coerce (unsafeCoerce)
+import Foreign as F
+import Foreign.Generic(encode)
 
 data RecoveredParserResult f
   = ParseSucceeded (f Void)
@@ -96,6 +100,12 @@ parsePartialModule src =
       Right $ Tuple res state.errors
     ParseFail error _ ->
       Left error
+
+parseAndEncode :: String -> F.Foreign
+parseAndEncode fileContent = case parseModule fileContent of 
+          ParseSucceeded mod -> encode mod
+          otherwise -> encode {}
+
 
 printModule :: forall e. TokensOf e => Module e -> String
 printModule mod =

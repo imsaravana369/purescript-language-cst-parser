@@ -31,6 +31,8 @@
   , "typelevel-prelude"
   , "unfoldable"
   , "unsafe-coerce"
+  , "foreign"
+  , "foreign-generic"
   ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/Main.purs" ]
